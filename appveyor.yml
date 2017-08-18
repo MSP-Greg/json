@@ -1,0 +1,27 @@
+---
+version: "{build}"
+clone_depth: 10
+init:
+  - set PATH=C:\ruby%ruby_version%\bin;C:\msys64\usr\bin;C:\msys64\mingw64\bin;C:\Program Files\7-Zip;C:\Program Files\AppVeyor\BuildAgent;C:\Program Files\Git\cmd;C:\Windows\system32
+  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-ragel"
+  - if %ruby_version%==2.3.4u (
+      appveyor DownloadFile https://dl.bintray.com/msp-greg/ruby_windows/ruby2.3.4u.7z -FileName C:/ruby2.3.4u.7z &
+      7z x C:/ruby2.3.4u.7z -oC:/ruby2.3.4u & C:/ruby2.3.4u/ruby2.3.4u_install.cmd)
+  - if %ruby_version%==_trunk (
+      appveyor DownloadFile https://dl.bintray.com/msp-greg/ruby_windows/ruby_trunk.7z -FileName C:/ruby_trunk.7z &
+      7z x C:/ruby_trunk.7z -oC:/ruby_trunk & C:/ruby_trunk/trunk_install.cmd)
+install:
+  - ruby   --version
+  - gem    --version
+  - bundle --version
+  - bundle install
+build_script:
+  - bundle config build.json --no-document --env-shebang --platform ruby -- --use-system-libraries
+test_script:
+  - bundle exec rake
+environment:
+  TESTOPTS: -v --no-show-detail-immediately
+  matrix:
+    - ruby_version: "2.3.4u"
+    - ruby_version: "24-x64"
+    - ruby_version: "_trunk"
