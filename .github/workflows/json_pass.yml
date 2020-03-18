@@ -11,7 +11,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        ruby: [ head, 2.7, 2.6, 2.5, 2.4, 2.3, 2.2, truffleruby ]
+        ruby: [ head, 2.7, 2.6, 2.5, 2.4, 2.3, 2.2 ]
+        include:
+          - { os: ubuntu-latest  , ruby: truffleruby }
+          - { os: macos-latest   , ruby: truffleruby }
+          - { os: ubuntu-latest  , ruby: head  }
+          - { os: macos-latest   , ruby: head  }
+          - { os: windows-latest , ruby: mingw }
+          - { os: windows-latest , ruby: mswin }
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ruby
@@ -20,30 +27,6 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           apt-get: ragel
           brew: ragel
-
-      - name: Install dependencies
-        run:  bundle install
-
-      - name: Compile
-        run:  rake compile
-
-      - name: Test
-        run:  rake test
-
-  windows:
-    runs-on: windows-latest
-    name: >-
-      windows-latest ${{ matrix.ruby }}
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby: [ mingw, mswin, 2.7, 2.6, 2.5, 2.4, 2.3, 2.2 ]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby, update gcc tools
-        uses: MSP-Greg/setup-ruby-pkgs@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
           mingw: _upgrade_ ragel
           vcpkg: ragel
 
