@@ -30,18 +30,20 @@ jobs:
         - { os: ubuntu-20.04, ruby: jruby-9.1 } # Ruby 2.3
         - { os: ubuntu-20.04, ruby: jruby-9.2 } # Ruby 2.5
         - { os: ubuntu-20.04, ruby: truffleruby }
-        - { os: windows-2022, ruby: mingw }
-        - { os: windows-2019, ruby: mswin }
+        - { os: ubuntu-22.04, ruby: 3.1 }
+        - { os: ubuntu-22.04, ruby: head }
+        - { os: windows-2022, ruby: mswin }
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Ruby
-        uses: MSP-Greg/setup-ruby-pkgs@v1
+        uses: ruby/setup-ruby-pkgs@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           apt-get: ragel
           brew: ragel
+          # only needed for Ruby 2.3
           mingw: ragel
 
       - run: bundle install
